@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hesap Makinesi + Döviz</string>
+    <string name="history">GEÇMİŞ</string>
+    <string name="dark">GECE</string>
+    <string name="clear">TEMİZLE</string>
+    <string name="delete">SİL</string>
+    <string name="convert">DÖNÜŞTÜR</string>
+    <string name="from">\'den</string>
+    <string name="to">\'ye</string>
+    <string name="currency_calculator">Döviz Çevirici</string>
+    <string name="currencies_are_updated_continuously">Birimler her gün güncellenmektedir.</string>
+    <string name="calculation_history">Geçmiş</string>
+</resources>
