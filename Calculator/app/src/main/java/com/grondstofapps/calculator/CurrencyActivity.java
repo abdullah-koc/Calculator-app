@@ -37,19 +37,26 @@ public class CurrencyActivity extends AppCompatActivity {
     private String alltext, rub, eur, gbp, jpy, tl, usd;
     private ArrayList<String> currencyNames;
 
+    public static boolean checkInternetConnection(Context context) {
+        try {
+            ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            if (conMgr.getActiveNetworkInfo() != null && conMgr.getActiveNetworkInfo().isAvailable() && conMgr.getActiveNetworkInfo().isConnected())
+                return true;
+            else
+                return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_currency);
 
-        boolean connected = false;
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-            connected = true;
-        } else {
-            connected = false;
-        }
+        boolean connected = checkInternetConnection(getApplicationContext());
         if (!connected) {
             Toast.makeText(getApplicationContext(), "Döviz hesabı için geçerli bir internet bağlantısı gereklidir.", Toast.LENGTH_SHORT).show();
             finish();

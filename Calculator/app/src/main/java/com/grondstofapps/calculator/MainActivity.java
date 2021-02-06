@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button buttonpi, buttonHistory, buttonCurrency,buttonMode;
+    private Button buttonpi, buttonHistory, buttonCurrency, buttonMode;
     private EditText editText, editTextT;
     private Intent goToHistory;
     private ArrayList<String> list;
@@ -32,6 +32,19 @@ public class MainActivity extends AppCompatActivity {
     public static final String MyPREFERENCES = "nightModePrefs";
     public static final String KEY_ISNIGHTMODE = "isNightMode";
 
+    public static boolean checkInternetConnection(Context context) {
+        try {
+            ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            if (conMgr.getActiveNetworkInfo() != null && conMgr.getActiveNetworkInfo().isAvailable() && conMgr.getActiveNetworkInfo().isConnected())
+                return true;
+            else
+                return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +66,13 @@ public class MainActivity extends AppCompatActivity {
         buttonMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!check){
+                if (!check) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                     saveNightModeState(true);
                     check = true;
                     gotocur = check;
                     recreate();
-                }
-                else{
+                } else {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     saveNightModeState(false);
                     check = false;
@@ -81,22 +93,12 @@ public class MainActivity extends AppCompatActivity {
         buttonCurrency.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean connected = false;
-                ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-                if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-                    connected = true;
-                }
-                else{
-                    connected = false;
-                }
-                if(connected){
+                if (checkInternetConnection(getApplicationContext())) {
                     Intent intent = new Intent(MainActivity.this, CurrencyActivity.class);
-                    intent.putExtra("check",gotocur);
+                    intent.putExtra("check", gotocur);
                     startActivity(intent);
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "Döviz hesabı için geçerli bir internet bağlantısı gereklidir.",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Döviz hesabı için geçerli bir internet bağlantısı gereklidir.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -142,14 +144,13 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private void checkNightMode(){
-        if(sharedPreferences.getBoolean(KEY_ISNIGHTMODE,false)){
+    private void checkNightMode() {
+        if (sharedPreferences.getBoolean(KEY_ISNIGHTMODE, false)) {
             check = true;
             gotocur = check;
             buttonMode.setText("GÜNDÜZ");
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        else{
+        } else {
             check = false;
             gotocur = check;
             buttonMode.setText("GECE");
@@ -169,19 +170,19 @@ public class MainActivity extends AppCompatActivity {
             editText.setText(String.format("%s%s%s", leftStr, txtT, rightStr));
             editText.setSelection(cursorPos + 2);
             setTextSize(editText);
-            editTextT.setText(new Expression((editText.getText() + "").replaceAll("×", "*").replaceAll("÷" , "/")).calculate() + "");
+            editTextT.setText(new Expression((editText.getText() + "").replaceAll("×", "*").replaceAll("÷", "/")).calculate() + "");
             return;
         }
         if (oldstr.length() > 0 && (txt.equals("-") || txt.equals("+") || txt.equals("÷") || txt.equals("×"))) {
             if (oldstr.charAt(oldstr.length() - 1) == '+' || oldstr.charAt(oldstr.length() - 1) == '-' || oldstr.charAt(oldstr.length() - 1) == '×' || oldstr.charAt(oldstr.length() - 1) == '÷') {
                 editText.setText(oldstr.substring(0, oldstr.length() - 1) + txt);
                 editText.setSelection(cursorPos);
-                editTextT.setText(new Expression((editText.getText() + "").replaceAll("×", "*").replaceAll("÷" , "/")).calculate() + "");
+                editTextT.setText(new Expression((editText.getText() + "").replaceAll("×", "*").replaceAll("÷", "/")).calculate() + "");
                 return;
             }
         }
         editText.setText(String.format("%s%s%s", leftStr, txt, rightStr));
-        editTextT.setText(new Expression((editText.getText().toString()).replaceAll("×", "*").replaceAll("÷" , "/")).calculate() + "");
+        editTextT.setText(new Expression((editText.getText().toString()).replaceAll("×", "*").replaceAll("÷", "/")).calculate() + "");
         editText.setSelection(cursorPos + 1);
         setTextSize(editText);
 
@@ -411,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
             result = result.substring(0, result.length() - 2);
         }
         addToList += " = " + result;
-        if(!addToList.substring(0, addToList.indexOf(" =")).equals(addToList.substring(addToList.indexOf(" =") + 3))){
+        if (!addToList.substring(0, addToList.indexOf(" =")).equals(addToList.substring(addToList.indexOf(" =") + 3))) {
             list.add(addToList);
         }
         editText.setText(result);
