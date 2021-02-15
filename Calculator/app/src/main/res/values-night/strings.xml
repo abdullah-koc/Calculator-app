@@ -9,6 +9,6 @@
     <string name="from">\'den</string>
     <string name="to">\'ye</string>
     <string name="currency_calculator">Döviz Çevirici</string>
-    <string name="currencies_are_updated_continuously">Birimler her gün güncellenmektedir.</string>
+    <string name="currencies_are_updated_continuously">Birimler sürekli güncellenmektedir.</string>
     <string name="calculation_history">Geçmiş</string>
 </resources>

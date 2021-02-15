@@ -1,5 +1,7 @@
 package com.grondstofapps.calculator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -18,12 +20,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.mariuszgromada.math.mxparser.Expression;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class CurrencyActivity extends AppCompatActivity {
@@ -34,7 +44,7 @@ public class CurrencyActivity extends AppCompatActivity {
     private Spinner spinnerfrom, spinnerto;
     private Button buttonconvert;
     private String stringfrom, stringto;
-    private String alltext, rub, eur, gbp, jpy, tl, usd;
+    private String alltext = "", btc = "", eur = "", gbp = "", gold = "", tl = "", usd = "";
     private ArrayList<String> currencyNames;
 
     public static boolean checkInternetConnection(Context context) {
@@ -75,12 +85,13 @@ public class CurrencyActivity extends AppCompatActivity {
         currencyNames.add("USD");
         currencyNames.add("EUR");
         currencyNames.add("GBP");
-        currencyNames.add("JPY");
-        currencyNames.add("RUB");
+        currencyNames.add("GOLD");
+        currencyNames.add("BTC");
         currencyNames.add("TL");
 
+        final DatabaseReference reference = FirebaseDatabase.getInstance("https://calculator-28cc6-default-rtdb.firebaseio.com").getReference();
 
-        new exc().execute();
+        textViewTT.setText("Dolar (USD)\nEuro (EUR)\nSterlin (GBP)\n1 Gram Altın (GOLD)\nBitcoin (BTC)");
 
 
         final ArrayAdapter<String> currencyAdapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, currencyNames);
@@ -123,92 +134,65 @@ public class CurrencyActivity extends AppCompatActivity {
             }
         });
 
-        buttonconvert.setOnClickListener(new View.OnClickListener() {
+
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                if (editTextVal.getText().toString().isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Invalid operation, please enter a value.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                for (int i = 0; i < currencies.size(); i++) {
-                    for (int j = 0; j < currencies.size(); j++) {
-                        if (stringfrom.equals(currencyNames.get(i)) && stringto.equals(currencyNames.get(j))) {
-                            Expression e = new Expression(editTextVal.getText().toString() + "*" + currencies.get(i) + "/" + currencies.get(j));
-                            DecimalFormat df = new DecimalFormat("0.0000");
-                            String result = e.calculate()+"";
-                            if(result.substring(result.length()-2).equals(".0")){
-                                result = result.substring(0,result.length()-2);
-                                textViewResult.setText(editTextVal.getText() + " " + stringfrom + " = " + result + " " + stringto);
-                                if (textViewResult.getText().toString().length() > 20) {
-                                    textViewResult.setTextSize(20);
-                                }
-                                return;
-                            }
-                            result = df.format(e.calculate())+"";
-                            textViewResult.setText(editTextVal.getText() + " " + stringfrom + " = " + result + " " + stringto);
-                            if (textViewResult.getText().toString().length() > 20) {
-                                textViewResult.setTextSize(20);
-                            }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usd = dataSnapshot.child("USD").getValue(String.class);
+                eur = dataSnapshot.child("EUR").getValue(String.class);
+                gbp = dataSnapshot.child("GBP").getValue(String.class);
+                gold = dataSnapshot.child("GOLD").getValue(String.class);
+                btc = dataSnapshot.child("BTC").getValue(String.class);
+                tl = "1";
+                currencies.clear();
+                currencies.add(usd);
+                currencies.add(eur);
+                currencies.add(gbp);
+                currencies.add(gold);
+                currencies.add(btc);
+                currencies.add(tl);
+
+                textViewTT2.setText(usd+"\n"+eur+"\n"+gbp+"\n"+gold+"\n"+btc);
+
+                buttonconvert.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (editTextVal.getText().toString().isEmpty()) {
+                            Toast.makeText(getApplicationContext(), "Invalid operation, please enter a value.", Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        for (int i = 0; i < currencies.size(); i++) {
+                            for (int j = 0; j < currencies.size(); j++) {
+                                if (stringfrom.equals(currencyNames.get(i)) && stringto.equals(currencyNames.get(j))) {
+                                    Expression e = new Expression(editTextVal.getText().toString() + "*" + currencies.get(i) + "/" + currencies.get(j));
+                                    DecimalFormat df = new DecimalFormat("0.0000");
+                                    String result = e.calculate()+"";
+                                    if(result.substring(result.length()-2).equals(".0")){
+                                        result = result.substring(0,result.length()-2);
+                                        textViewResult.setText(editTextVal.getText() + " " + stringfrom + " = " + result + " " + stringto);
+                                        if (textViewResult.getText().toString().length() > 20) {
+                                            textViewResult.setTextSize(20);
+                                        }
+                                        return;
+                                    }
+                                    result = df.format(e.calculate())+"";
+                                    textViewResult.setText(editTextVal.getText() + " " + stringfrom + " = " + result + " " + stringto);
+                                    if (textViewResult.getText().toString().length() > 20) {
+                                        textViewResult.setTextSize(20);
+                                    }
+                                    return;
+                                }
+                            }
+                        }
                     }
-                }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
-    }
-
-    public class exc extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                DecimalFormat df = new DecimalFormat("0.0000");
-                Document doc = Jsoup.connect("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml").get();
-                alltext = doc.outerHtml();
-                tl = "1";
-                String eurPart = alltext.substring(alltext.indexOf("TRY") + 10, alltext.indexOf("TRY") + 30);
-                eur = eurPart.substring(0, eurPart.indexOf("/>")-1).replaceAll("\"", "");
-                String jpyPart = alltext.substring(alltext.indexOf("JPY") + 10, alltext.indexOf("JPY") + 30);
-                jpy = jpyPart.substring(0, jpyPart.indexOf("/>")).replaceAll("\"", "");
-                jpy = df.format(new Expression(eur + "/" + jpy).calculate()) + "";
-                String usdPart = alltext.substring(alltext.indexOf("USD") + 10, alltext.indexOf("USD") + 30);
-                usd = usdPart.substring(0, usdPart.indexOf("/>")).replaceAll("\"", "");
-                usd = df.format(new Expression(eur + "/" + usd).calculate())+"";
-                String gbpPart = alltext.substring(alltext.indexOf("GBP") + 10, alltext.indexOf("GBP") + 30);
-                gbp = gbpPart.substring(0, gbpPart.indexOf("/>")).replaceAll("\"", "");
-                gbp = df.format(new Expression(eur + "/" + gbp).calculate())+"";
-                String rubPart = alltext.substring(alltext.indexOf("RUB") + 10, alltext.indexOf("RUB") + 30);
-                rub = rubPart.substring(0, rubPart.indexOf("/>")).replaceAll("\"", "");
-                rub = df.format(new Expression(eur + "/" + rub).calculate())+"";
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Thread thread = new Thread() {
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(CurrencyActivity.this, "Bir hata oluştu. Lütfen tekrar deneyin.", Toast.LENGTH_LONG);
-                            }
-                        });
-                    }
-                };
-                thread.start();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            currencies.add(usd);
-            currencies.add(eur);
-            currencies.add(gbp);
-            currencies.add(jpy);
-            currencies.add(rub);
-            currencies.add(tl);
-            textViewTT.setText("Dolar (USD)\nEuro (EUR)\nSterlin (GBP)\nJapon Yeni (JPY)\nRus Rublesi (RUB)");
-            textViewTT2.setText(usd+"\n"+eur+"\n"+gbp+"\n"+jpy+"\n"+rub);
-
-        }
     }
 }
 
