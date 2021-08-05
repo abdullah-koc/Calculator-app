@@ -17,6 +17,7 @@
     <TextView
         android:id="@+id/textViewH"
         android:layout_width="wrap_content"
+        android:fontFamily="@font/convergence"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:text="@string/calculation_history"
@@ -30,6 +31,7 @@
         android:id="@+id/simpleListView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:fontFamily="@font/convergence"
         app:layout_constraintBottom_toBottomOf="@id/guideline14"
         app:layout_constraintTop_toTopOf="@id/guideline13"
         tools:layout_editor_absoluteX="0dp" />

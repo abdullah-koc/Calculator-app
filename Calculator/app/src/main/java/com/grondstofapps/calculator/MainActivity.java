@@ -11,9 +11,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListAdapter;
 import android.widget.Toast;
 
 import org.mariuszgromada.math.mxparser.*;
@@ -163,6 +165,15 @@ public class MainActivity extends AppCompatActivity {
         int cursorPos = editText.getSelectionStart();
         String leftStr = oldstr.substring(0, cursorPos);
         String rightStr = oldstr.substring(cursorPos);
+
+        if(oldstr.length() > 0 && cursorPos == 0){
+            editText.setText(txt + oldstr);
+            editTextT.setText(new Expression((editText.getText() + "").replaceAll("×", "*").replaceAll("÷", "/")).calculate() + "");
+            editText.setSelection(cursorPos + 1);
+            setTextSize(editText);
+            return;
+        }
+
         if (oldstr.length() > 0 && oldstr.charAt(cursorPos - 1) == ')' &&
                 (txt == "0" || txt == "1" || txt == "2" || txt == "3" || txt == "4" || txt == "5" ||
                         txt == "6" || txt == "7" || txt == "8" || txt == "9")) {
@@ -438,40 +449,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openclosepbutton(View view) {
-        int cursorPos = editText.getSelectionStart();
-        int openp = 0;
-        int closep = 0;
-        int textLength = editText.getText().length();
-        for (int i = 0; i < cursorPos; i++) {
-            if (editText.getText().toString().substring(i, i + 1).equals("(")) {
-                openp += 1;
+        try{
+            int cursorPos = editText.getSelectionStart();
+            int openp = 0;
+            int closep = 0;
+            int textLength = editText.getText().length();
+            for (int i = 0; i < cursorPos; i++) {
+                if (editText.getText().toString().substring(i, i + 1).equals("(")) {
+                    openp += 1;
+                }
+                if (editText.getText().toString().substring(i, i + 1).equals(")")) {
+                    closep += 1;
+                }
             }
-            if (editText.getText().toString().substring(i, i + 1).equals(")")) {
-                closep += 1;
-            }
-        }
-        if (openp == closep || editText.getText().toString().substring(textLength - 1, textLength).equals("(")) {
-            if (editText.getText().toString().length() == 0) {
+            if (openp == closep || editText.getText().toString().substring(textLength - 1, textLength).equals("(")) {
+                if (editText.getText().toString().length() == 0) {
+                    updateText("(");
+                    editText.setSelection(cursorPos + 1);
+                    return;
+                }
+                if (!(editText.getText().toString().charAt(cursorPos - 1) == '+' ||
+                        editText.getText().toString().charAt(cursorPos - 1) == '-' ||
+                        editText.getText().toString().charAt(cursorPos - 1) == '÷' ||
+                        editText.getText().toString().charAt(cursorPos - 1) == '(' ||
+                        editText.getText().toString().charAt(cursorPos - 1) == '^' ||
+                        editText.getText().toString().charAt(cursorPos - 1) == '%' ||
+                        editText.getText().toString().charAt(cursorPos - 1) == '×')) {
+                    updateText("×(");
+                    editText.setSelection(cursorPos + 2);
+                    return;
+                }
                 updateText("(");
                 editText.setSelection(cursorPos + 1);
-                return;
+            } else if (closep < openp && !editText.getText().toString().substring(textLength - 1, textLength).equals("(")) {
+                updateText(")");
+                editText.setSelection(cursorPos + 1);
             }
-            if (!(editText.getText().toString().charAt(cursorPos - 1) == '+' ||
-                    editText.getText().toString().charAt(cursorPos - 1) == '-' ||
-                    editText.getText().toString().charAt(cursorPos - 1) == '÷' ||
-                    editText.getText().toString().charAt(cursorPos - 1) == '(' ||
-                    editText.getText().toString().charAt(cursorPos - 1) == '^' ||
-                    editText.getText().toString().charAt(cursorPos - 1) == '%' ||
-                    editText.getText().toString().charAt(cursorPos - 1) == '×')) {
-                updateText("×(");
-                editText.setSelection(cursorPos + 2);
-                return;
-            }
-            updateText("(");
-            editText.setSelection(cursorPos + 1);
-        } else if (closep < openp && !editText.getText().toString().substring(textLength - 1, textLength).equals("(")) {
-            updateText(")");
-            editText.setSelection(cursorPos + 1);
+        } catch (Exception e){
+            Toast.makeText(getApplicationContext(), "Geçersiz operasyon", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -10,5 +10,5 @@
     <string name="to">\'ye</string>
     <string name="currency_calculator">Döviz Çevirici</string>
     <string name="currencies_are_updated_continuously">Birimler sürekli güncellenmektedir.</string>
-    <string name="calculation_history">GEÇMİŞ</string>
+    <string name="calculation_history">Geçmiş</string>
 </resources>
