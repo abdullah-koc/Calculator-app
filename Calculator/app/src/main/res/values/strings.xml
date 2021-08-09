@@ -11,4 +11,6 @@
     <string name="currency_calculator">Döviz Çevirici</string>
     <string name="currencies_are_updated_continuously">Birimler sürekli güncellenmektedir.</string>
     <string name="calculation_history">Geçmiş</string>
+
+    <string name="hyperlink"><a href="https://play.google.com/store/apps/details?id=com.grondstofapps.calculator">Grondstof</a></string>
 </resources>

@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,6 +39,7 @@ public class CurrencyActivity extends AppCompatActivity {
     private ArrayList<String> currencies;
     private EditText editTextVal;
     private TextView textViewResult, textViewTT, textViewTT2;
+    private TextView grondstof;
     private Spinner spinnerfrom, spinnerto;
     private Button buttonconvert;
     private String stringfrom, stringto;
@@ -69,6 +71,10 @@ public class CurrencyActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+        grondstof = findViewById(R.id.grondstof);
+        grondstof.setMovementMethod(LinkMovementMethod.getInstance());
+
         editTextVal = findViewById(R.id.editTextVal);
         textViewResult = findViewById(R.id.textViewResult);
         textViewTT = findViewById(R.id.textViewTT);

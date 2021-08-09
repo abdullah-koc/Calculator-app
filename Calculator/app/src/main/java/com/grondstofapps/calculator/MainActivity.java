@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
         editText.setShowSoftInputOnFocus(false);
         editText.setOnClickListener(new View.OnClickListener() {
             @Override

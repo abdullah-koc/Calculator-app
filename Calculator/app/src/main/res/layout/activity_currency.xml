@@ -232,12 +232,12 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewResult" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/grondstof"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
         android:fontFamily="@font/convergence"
-        android:text="Grondstof"
+        android:text="@string/hyperlink"
         android:textColor="@color/colorCurrency"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
